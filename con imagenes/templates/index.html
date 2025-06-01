@@ -1,170 +1,665 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>GuideTourBot</title>
 
   <!-- Google Fonts -->
   <link
-    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Playfair+Display:wght@700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Playfair+Display:wght@700&display=swap"
     rel="stylesheet"
-  >
+  />
   <!-- Bootstrap 5 CSS -->
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
     rel="stylesheet"
-  >
+  />
+  <!-- AOS CSS (Animate On Scroll) -->
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css"
+    rel="stylesheet"
+  />
 
   <style>
+    /* =========================================================
+       0. Variables de color
+    ========================================================= */
+    :root {
+      --color-primary: #3b82f6;    /* Azul vivo */
+      --color-secondary: #10b981;  /* Verde vibrante */
+      --color-accent: #f59e0b;     /* Ámbar brillante */
+      --color-dark: #ffffff;       /* Gris muy oscuro */
+      --color-light: #f3f4f6;      /* Gris muy claro */
+      --color-card-bg: #ffffff;    
+      --color-text-primary: #1e293b;
+      --color-text-secondary: #475569;
+      --color-overlay: rgba(30, 41, 59, 0.4);
+    }
+
+    /* =========================================================
+       1. Tipografías globales y body
+    ========================================================= */
     body {
-      font-family: 'Montserrat', sans-serif;
+      font-family: 'Poppins', sans-serif;
       margin: 0;
       padding: 0;
+      background-color: var(--color-light);
+      color: var(--color-text-primary);
+      scroll-behavior: smooth;
+    }
+    h1, h3, h4, h5, h6 {
+      font-family: 'Playfair Display', serif;
+      color: var(--color-dark);
+      margin-bottom: 0.5rem;
+    }
+    h2 {
+      font-family: 'Playfair Display', serif;
+      color: #1e293b;
+      margin-bottom: 0.5rem;
+    }
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* =========================================================
+       2. Navbar rediseñado
+    ========================================================= */
+    .navbar {
+      background-color: rgba(30, 41, 59, 0.85);
+      backdrop-filter: blur(6px);
+      padding: 0.75rem 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
     }
     .navbar-brand {
       font-family: 'Playfair Display', serif;
-      font-size: 1.5rem;
+      font-size: 1.8rem;
+      color: #fff !important;
+      letter-spacing: 1px;
     }
+    .navbar-nav .nav-link {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 500;
+      color: #e2e8f0 !important;
+      position: relative;
+      transition: color 0.3s ease;
+    }
+    .navbar-nav .nav-link::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: -2px;
+      left: 50%;
+      background-color: var(--color-accent);
+      transition: width 0.3s ease, left 0.3s ease;
+    }
+    .navbar-nav .nav-link:hover {
+      color: #fff !important;
+    }
+    .navbar-nav .nav-link:hover::after {
+      width: 100%;
+      left: 0;
+    }
+    .btn-reserva {
+      background-color: var(--color-accent);
+      color: #1e293b;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      padding: 0.5rem 1.25rem;
+      border-radius: 2rem;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+    .btn-reserva:hover {
+      background-color: #d97706;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+      color: #fff;
+    }
+
+    /* =========================================================
+       3. Hero con slider de imágenes y overlay
+    ========================================================= */
     .hero {
       position: relative;
-      height: 60vh;
+      height: 75vh;
       overflow: hidden;
     }
-    .hero .carousel-item img {
+    .carousel-inner .carousel-item {
+      height: 75vh;
+    }
+    .carousel-inner .carousel-item img {
       object-fit: cover;
       width: 100%;
       height: 100%;
+      filter: brightness(0.6);
+      transition: transform 1s ease;
     }
-    .hero .overlay {
+    .carousel-inner .carousel-item.active img {
+      transform: scale(1.1);
+    }
+    /* Capa semitransparente sobre el carrusel */
+    .hero::before {
+      content: '';
       position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.4);
+      inset: 0;
+      background: var(--color-overlay);
       z-index: 1;
     }
-    .search-container {
+
+    /* =========================================================
+       4. Hero‐content centrado vertical y horizontalmente
+    ========================================================= */
+    .hero-content-wrapper {
       position: absolute;
-      top: 50%; left: 50%;
+      top: 10%;
       transform: translate(-50%, -50%);
       z-index: 2;
-      width: 90%;
-      max-width: 600px;
+
+      /* Para centrar textos y buscador en una columna */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+
+      width: 100%;
+      padding: 0 1rem;
+      color: #fff;
     }
-    footer {
-      background: #f8f9fa;
+    .hero-content-wrapper h1 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .hero-content-wrapper p {
+      font-size: 1.2rem;
+      font-weight: 400;
+      margin-bottom: 1.5rem;
+      color: #e0f2fe;
     }
 
-    /* Badge sutil "Más relevante" en azul */
-    .badge-highlight {
+    /* =========================================================
+       5. Buscador perfectamente centrado sobre el slider
+    ========================================================= */
+    .search-form {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 650px;       /* Ajusta al ancho que desees */
+      margin: 0 auto;         /* Se asegura de centrarlo */
+    }
+    .search-input-wrapper {
+      position: relative;
+      flex: 1;
+      margin-right: -1px;     /* Para colapsar bordes con el botón */
+    }
+    .search-input-wrapper svg {
       position: absolute;
-      bottom: 0.75rem;
+      top: 50%;
+      left: 1rem;
+      transform: translateY(-50%);
+      width: 1.2rem;
+      height: 1.2rem;
+      fill: var(--color-dark);
+      opacity: 0.7;
+    }
+    .search-input {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 3rem;
+      border: none;
+      border-top-left-radius: 2rem;
+      border-bottom-left-radius: 2rem;
+      font-size: 1.1rem;
+      background-color: rgba(255, 255, 255, 0.85);
+      color: var(--color-dark);
+      outline: none;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+    .search-input::placeholder {
+      color: var(--color-text-secondary);
+      font-style: italic;
+    }
+    .search-input:focus {
+      background-color: #ffffff;
+      transform: scale(1.01);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .search-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-top-right-radius: 2rem;
+      border-bottom-right-radius: 2rem;
+      background-color: var(--color-primary);
+      color: #ffffff;
+      font-size: 1.1rem;
+      font-weight: 600;
+      transition: background 0.3s ease, transform 0.2s ease;
+      cursor: pointer;
+    }
+    .search-button:hover {
+      background-color: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+    }
+
+    /* =========================================================
+       6. Flecha animada para invitar a bajar
+    ========================================================= */
+    .scroll-down {
+      position: absolute;
+      bottom: 2rem;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(13, 110, 253, 0.9); /* azul Bootstrap primary */
+      font-size: 2.5rem;
       color: #ffffff;
-      padding: 0.3rem 0.6rem;
+      animation: bounce 2s infinite;
+      cursor: pointer;
+      z-index: 2;
+    }
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {
+        transform: translate(-50%, 0);
+      }
+      40% {
+        transform: translate(-50%, -12px);
+      }
+      60% {
+        transform: translate(-50%, -6px);
+      }
+    }
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+      filter: invert(100%);
+      width: 2rem;
+      height: 2rem;
+    }
+
+    /* =========================================================
+       7. Separador decorativo (onda SVG)
+    ========================================================= */
+    .wave-divider {
+      position: relative;
+      width: 100%;
+      margin-bottom: -5px;
+    }
+    .wave-divider svg {
+      display: block;
+      width: 100%;
+      height: 60px;
+    }
+
+    /* =========================================================
+       8. Contenedor de Resultados
+    ========================================================= */
+    #resultados-section {
+      padding: 3rem 1rem;
+      background-color: var(--color-light);
+    }
+    #resultados-section h2 {
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      color: #1e293b;
+    }
+    .results-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    /* =========================================================
+       9. Tarjetas de resultados rediseñadas
+    ========================================================= */
+    .card {
+      background-color: var(--color-card-bg);
+      border: none;
+      border-radius: 1rem;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      perspective: 800px;
+    }
+    .card-inner {
+      transition: transform 0.3s ease;
+      transform-style: preserve-3d;
+    }
+    .card:hover {
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+    }
+    .card:hover .card-inner {
+      transform: rotateY(6deg) rotateX(3deg) scale(1.02);
+    }
+    .card-img-top {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .card:hover .card-img-top {
+      transform: scale(1.1);
+    }
+    .card-body {
+      padding: 1rem 1rem 1.5rem;
+      transform: translateZ(30px);
+    }
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      margin-bottom: 0.5rem;
+    }
+    .card-text {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+      margin-bottom: 1rem;
+    }
+    .card-footer {
+      background: transparent;
+      border-top: none;
+      padding: 0 1rem 1rem;
+    }
+    .badge-highlight {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background-color: var(--color-accent);
+      color: #1e293b;
+      padding: 0.35rem 0.75rem;
       font-size: 0.85rem;
       font-weight: 600;
-      border-radius: 1.25rem;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      text-transform: none;
-      z-index: 3;
+      border-radius: 1rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      z-index: 2;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* =========================================================
+       10. Botón “Volver arriba”
+    ========================================================= */
+    #btnScrollTop {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background-color: var(--color-primary);
+      color: #ffffff;
+      border: none;
+      border-radius: 50%;
+      width: 3.5rem;
+      height: 3.5rem;
+      font-size: 1.5rem;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.3s ease;
+      z-index: 1000;
+    }
+    #btnScrollTop:hover {
+      background-color: #2563eb;
+      transform: translateY(-3px);
+    }
+
+    /* =========================================================
+       11. Footer rediseñado
+    ========================================================= */
+    footer {
+      background-color: #ffffff;
+      padding: 1.5rem 0;
+      border-top: 1px solid #e2e8f0;
+    }
+    footer small {
+      color: var(--color-text-secondary);
+    }
+
+    /* =========================================================
+       12. Responsive adjustments
+    ========================================================= */
+    @media (max-width: 992px) {
+      .hero-content-wrapper h1 {
+        font-size: 2.4rem;
+      }
+      .hero-content-wrapper p {
+        font-size: 1rem;
+      }
+      .search-form {
+        max-width: 90%;  /* Ajustar ancho en pantallas medianas */
+      }
+    }
+    @media (max-width: 768px) {
+      .hero {
+        height: 60vh;
+      }
+      .hero-content-wrapper h1 {
+        font-size: 2rem;
+      }
+      .hero-content-wrapper p {
+        font-size: 0.9rem;
+      }
+      .search-input {
+        font-size: 1rem;
+      }
+      .search-button {
+        font-size: 1rem;
+      }
+      #resultados-section {
+        padding: 2rem 0.5rem;
+      }
     }
   </style>
 </head>
 <body class="d-flex flex-column min-vh-100">
-
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+  <!-- ========================
+       Navbar
+  ======================== -->
+  <nav class="navbar navbar-expand-lg navbar-dark shadow">
     <div class="container">
       <a class="navbar-brand" href="#">GuideTourBot</a>
-      <button class="navbar-toggler" type="button"
-              data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navMenu"
+      >
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navMenu">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="#">Tours</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">Blog</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">Acerca</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
+        <ul class="navbar-nav ms-auto align-items-center">
           <li class="nav-item">
-            <a class="btn btn-primary ms-3" href="#">Reserva Ahora</a>
+            <a class="nav-link" href="#">Tours</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Blog</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Acerca</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Contacto</a>
+          </li>
+          <li class="nav-item ms-3">
+            <a class="btn btn-reserva" href="#">Reserva Ahora</a>
           </li>
         </ul>
       </div>
     </div>
   </nav>
 
-  <!-- Carousel Hero -->
-  <div id="heroCarousel" class="carousel slide hero" data-bs-ride="carousel" data-bs-interval="4000">
-    <div class="carousel-inner h-100">
-      {% for img in ['ciudad_amurallada.jpg', 'cafe_del_mar.jpg', 'bocagrande.jpg'] %}
-        <div class="carousel-item h-100 {% if loop.first %}active{% endif %}">
-          <img
-            src="{{ url_for('static', filename='imagenes/' ~ img) }}"
-            alt="Slide {{ loop.index }}"
-          >
-        </div>
-      {% endfor %}
-    </div>
-    <div class="overlay"></div>
-    <div class="search-container">
-      <form method="post" class="input-group shadow-lg">
-        <input
-          type="text"
-          name="query"
-          class="form-control form-control-lg"
-          placeholder="¿Qué lugar buscas en Cartagena?"
-          required
-          value=""
-        >
-        <button class="btn btn-primary btn-lg" type="submit">🔍 Buscar</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Resultados -->
-  <div class="container my-5 flex-grow-1">
-    {% if resultados %}
-      <h2 class="mb-4 text-center">Resultados</h2>
-      <div class="row g-4">
-        {% for r in resultados %}
-          <div class="col-md-4">
-            <div class="card h-100 shadow-sm position-relative">
-              {% if loop.first %}
-                <span class="badge-highlight">Más relevante</span>
-              {% endif %}
-              <img
-                src="{{ r.imagen_url }}"
-                class="card-img-top"
-                alt="{{ r.texto }}"
-                style="object-fit: cover; height: 200px;"
-              >
-              <div class="card-body d-flex flex-column">
-                <h5 class="card-title">{{ r.texto }}</h5>
-                <p class="mt-auto mb-0">
-                  <small class="text-muted">Score: {{ r.score }}</small>
-                </p>
-              </div>
-            </div>
+  <!-- ========================
+       Hero Section (Carousel)
+  ======================== -->
+  <section class="hero">
+    <div
+      id="heroCarousel"
+      class="carousel slide h-100"
+      data-bs-ride="carousel"
+      data-bs-interval="4000"
+    >
+      <div class="carousel-inner h-100">
+        {% for img in ['ciudad_amurallada.jpg', 'cafe_del_mar.jpg', 'bocagrande.jpg'] %}
+          <div class="carousel-item h-100 {% if loop.first %}active{% endif %}">
+            <img
+              src="{{ url_for('static', filename='imagenes/' ~ img) }}"
+              alt="Slide {{ loop.index }}"
+            />
           </div>
         {% endfor %}
       </div>
-    {% endif %}
+      <button
+        class="carousel-control-prev"
+        type="button"
+        data-bs-target="#heroCarousel"
+        data-bs-slide="prev"
+      >
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Anterior</span>
+      </button>
+      <button
+        class="carousel-control-next"
+        type="button"
+        data-bs-target="#heroCarousel"
+        data-bs-slide="next"
+      >
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Siguiente</span>
+      </button>
+    </div>
+
+    <!-- Overlay y contenido centrado -->
+    <div class="hero-content-wrapper" data-aos="fade-up">
+      <h1>Descubre Cartagena con Nosotros</h1>
+      <p>
+        Explora los rincones más mágicos de la ciudad amurallada: tours,
+        recomendaciones y experiencias únicas.
+      </p>
+      <!-- Buscador central alineado con textos -->
+      <form
+        method="post"
+        class="search-form"
+        data-aos="fade-in"
+        data-aos-delay="200"
+      >
+        <div class="search-input-wrapper">
+          <!-- Ícono de lupa -->
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M15.5 14h-.79l-.28-.27a6.471 6.471 0 001.48-5.34C15.24 5.65 12.11 2.5 8.5 2.5S1.76 5.65 1.09 8.39a6.471 6.471 0 001.48 5.34l.27.27v.79l5 4.99L11.49 19l-4.99-5zM4.5 8.5c0-2.48 2.02-4.5 4.5-4.5S13.5 6.02 13.5 8.5 11.48 13 9 13 4.5 10.98 4.5 8.5z"
+            />
+          </svg>
+          <input
+            type="text"
+            name="query"
+            class="search-input"
+            placeholder="¿Qué lugar buscas en Cartagena?"
+            required
+            value=""
+          />
+        </div>
+        <button class="search-button" type="submit">Buscar</button>
+      </form>
+    </div>
+
+    <!-- Flecha “scroll down” -->
+    <div class="scroll-down" onclick="scrollToResults()">⌄</div>
+  </section>
+
+  <!-- Separador en onda SVG -->
+  <div class="wave-divider">
+    <svg viewBox="0 0 1200 60" preserveAspectRatio="none">
+      <path
+        d="M0,30 C300,90 900,-30 1200,30 L1200,60 L0,60 Z"
+        fill="#f3f4f6"
+      />
+    </svg>
   </div>
 
-  <!-- Footer -->
-  <footer class="py-4 mt-auto">
+  <!-- ========================
+       Resultados Section
+  ======================== -->
+  <section id="resultados-section">
+    {% if resultados %}
+      <div class="container">
+        <h2 class="text-center" data-aos="fade-up">Resultados de Búsqueda</h2>
+        <div class="results-container mt-4">
+          {% for r in resultados %}
+            <div
+              class="card"
+              data-aos="zoom-in"
+              data-aos-delay="{{ loop.index0 * 100 }}"
+            >
+              <div class="card-inner">
+                {% if loop.first %}
+                  <div class="badge-highlight">Más relevante</div>
+                {% endif %}
+                <img
+                  src="{{ r.imagen_url }}"
+                  class="card-img-top"
+                  alt="{{ r.texto }}"
+                />
+                <div class="card-body">
+                  <h5 class="card-title">{{ r.texto }}</h5>
+                  <p class="card-text">Score: {{ r.score }}</p>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </section>
+
+  <!-- ========================
+       Footer
+  ======================== -->
+  <footer>
     <div class="container text-center">
-      <small class="text-muted">© 2025 GuideTourBot. Todos los derechos reservados.</small>
+      <small>© 2025 GuideTourBot. Todos los derechos reservados.</small>
     </div>
   </footer>
 
+  <!-- Botón “Volver arriba” -->
+  <button id="btnScrollTop" onclick="scrollToTop()">↑</button>
+
   <!-- Bootstrap 5 JS Bundle -->
-  <script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-  ></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- AOS JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+  <script>
+    // Inicializar AOS
+    AOS.init({
+      duration: 800,
+      once: true
+    });
+
+    // Mostrar u ocultar botón “Volver arriba”
+    const btnScrollTop = document.getElementById('btnScrollTop');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 400) {
+        btnScrollTop.style.display = 'flex';
+      } else {
+        btnScrollTop.style.display = 'none';
+      }
+    });
+
+    // Función para subir al top
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Función para scroll down hacia resultados
+    function scrollToResults() {
+      const resultsSection = document.getElementById('resultados-section');
+      if (resultsSection) {
+        resultsSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  </script>
 </body>
 </html>
