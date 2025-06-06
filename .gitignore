@@ -1,2 +1,9 @@
 con imagenes/cartagena_finetuned_moderno/
 con imagenes/cartagena_finetuned_moderno/
+__pycache__/
+*.pyc
+.DS_Store
+data/raw/
+data/processed/
+venv/
+*.sqlite
